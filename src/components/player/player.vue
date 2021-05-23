@@ -12,9 +12,23 @@
         <h2 class="subtitle">{{ currentSong.singer }}</h2>
       </div>
       <div class="bottom">
+        <div class="progress-wrapper">
+          <span class="time time-l">{{ formatTime(currentTime) }}</span>
+          <div class="progress-bar-wrapper">
+            <progress-bar
+              ref="barRef"
+              :progress="progress"
+              @progress-changing="onProgressChanging"
+              @progress-changed="onProgressChanged"
+            />
+          </div>
+          <span class="time time-r">{{
+            formatTime(currentSong.duration)
+          }}</span>
+        </div>
         <div class="operators">
           <div class="icon i-left">
-            <i />
+            <i @click="changeMode" :class="modeIcon" />
           </div>
           <div class="icon i-left" :class="disableCls">
             <i @click="prev" class="icon-prev" />
@@ -26,24 +40,42 @@
             <i @click="next" class="icon-next" />
           </div>
           <div class="icon i-right">
-            <i @click="toggleFavorite(currentSong)" />
+            <i
+              @click="toggleFavorite(currentSong)"
+              :class="getFavoriteIcon(currentSong)"
+            />
           </div>
         </div>
       </div>
     </div>
-    <audio ref="audioRef" @pause="pause" @canplay="ready" @error="error" />
+    <audio
+      ref="audioRef"
+      @timeupdate="updateTime"
+      @pause="pause"
+      @canplay="ready"
+      @error="error"
+      @ended="end"
+    />
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
 import { computed, ref, watch } from "vue";
+import useMode from "./use-mode";
+import useFavorite from "@/components/player/use-favorite";
+import ProgressBar from "./progress-bar";
+import { formatTime } from "@/assets/js/util";
+import { PLAY_MODE } from "@/assets/js/constant";
 
 export default {
   name: "player",
+  components: { ProgressBar },
   setup() {
     const audioRef = ref(null);
     const songReady = ref(false);
+    const currentTime = ref(0);
+    let progressChanging = false;
 
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
@@ -51,9 +83,15 @@ export default {
     const playing = computed(() => store.state.playing);
     const currentIndex = computed(() => store.state.currentIndex);
     const playlist = computed(() => store.state.playlist);
+    const playMode = computed(() => store.state.playMode);
+    const { modeIcon, changeMode } = useMode();
+    const { getFavoriteIcon, toggleFavorite } = useFavorite();
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
+    });
+    const progress = computed(() => {
+      return currentTime.value / currentSong.value.duration;
     });
     const disableCls = computed(() => {
       return songReady.value ? "" : "disable";
@@ -63,6 +101,7 @@ export default {
       if (!newSong.id || !newSong.url) {
         return;
       }
+      currentTime.value = 0;
       songReady.value = false;
       const audioEl = audioRef.value;
       audioEl.src = newSong.url;
@@ -136,6 +175,7 @@ export default {
       const audioEl = audioRef.value;
       audioEl.currentTime = 0;
       audioEl.play();
+      store.commit("setPlayingState", true);
     }
 
     function ready() {
@@ -149,12 +189,43 @@ export default {
       songReady.value = true;
     }
 
+    function updateTime(e) {
+      if (!progressChanging) {
+        currentTime.value = e.target.currentTime;
+      }
+    }
+
+    function onProgressChanging(progress) {
+      progressChanging = true;
+      currentTime.value = currentSong.value.duration * progress;
+    }
+
+    function onProgressChanged(progress) {
+      progressChanging = false;
+      audioRef.value.currentTime = currentTime.value =
+        currentSong.value.duration * progress;
+      if (!playing.value) {
+        store.commit("setPlayingState", true);
+      }
+    }
+
+    function end() {
+      currentTime.value = 0;
+      if (playMode.value === PLAY_MODE.loop) {
+        loop();
+      } else {
+        next();
+      }
+    }
+
     return {
       audioRef,
       fullScreen,
+      currentTime,
       currentSong,
       playIcon,
       disableCls,
+      progress,
       goBack,
       togglePlay,
       pause,
@@ -162,6 +233,17 @@ export default {
       next,
       ready,
       error,
+      end,
+      updateTime,
+      formatTime,
+      onProgressChanging,
+      onProgressChanged,
+      // mode
+      modeIcon,
+      changeMode,
+      //favorite
+      getFavoriteIcon,
+      toggleFavorite,
     };
   },
 };
