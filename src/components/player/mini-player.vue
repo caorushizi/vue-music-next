@@ -41,15 +41,34 @@
 import { useStore } from "vuex";
 import { computed } from "vue";
 import useCd from "./use-cd";
+import ProgressCircle from "./progress-circle";
+import useMiniSlider from "./use-mini-slider";
 
 export default {
   name: "mini-player",
+  components: {
+    ProgressCircle,
+  },
+  props: {
+    progress: {
+      type: Number,
+      default: 0,
+    },
+    togglePlay: Function,
+  },
   setup() {
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
     const currentSong = computed(() => store.getters.currentSong);
+    const playing = computed(() => store.state.playing);
+    const playlist = computed(() => store.state.playlist);
+
+    const miniPlayIcon = computed(() => {
+      return playing.value ? "icon-pause-mini" : "icon-play-mini";
+    });
 
     const { cdRef, cdImageRef, cdCls } = useCd();
+    const { sliderWrapperRef } = useMiniSlider();
 
     function showNormalPlayer() {
       store.commit("setFullScreen", true);
@@ -58,11 +77,15 @@ export default {
     return {
       fullScreen,
       currentSong,
+      miniPlayIcon,
       showNormalPlayer,
+      playlist,
       // cd
       cdRef,
       cdImageRef,
       cdCls,
+      // slider wrapper ref
+      sliderWrapperRef,
     };
   },
 };
