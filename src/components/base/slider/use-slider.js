@@ -1,6 +1,7 @@
 import BScroll from "@better-scroll/core";
 import Slide from "@better-scroll/slide";
-import { onMounted, onUnmounted, ref } from "vue";
+
+import { onMounted, onUnmounted, onActivated, onDeactivated, ref } from "vue";
 
 BScroll.use(Slide);
 
@@ -12,10 +13,10 @@ export default function useSlider(wrapperRef) {
     const sliderVal = (slider.value = new BScroll(wrapperRef.value, {
       click: true,
       scrollX: true,
-      scrollY: true,
+      scrollY: false,
       momentum: false,
       bounce: false,
-      probeType: 1,
+      probeType: 2,
       slide: true,
     }));
 
@@ -28,5 +29,17 @@ export default function useSlider(wrapperRef) {
     slider.value.destroy();
   });
 
-  return { slider, currentPageIndex };
+  onActivated(() => {
+    slider.value.enable();
+    slider.value.refresh();
+  });
+
+  onDeactivated(() => {
+    slider.value.disable();
+  });
+
+  return {
+    slider,
+    currentPageIndex,
+  };
 }

@@ -18,7 +18,7 @@ export default function useAnimation() {
         transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`,
       },
       100: {
-        transform: "translate3d(0,0,0) scale(1)",
+        transform: "translate3d(0, 0, 0) scale(1)",
       },
     };
 
@@ -61,6 +61,7 @@ export default function useAnimation() {
   function afterLeave() {
     leaving = false;
     const cdWrapperEl = cdWrapperRef.value;
+
     cdWrapperEl.style.transition = "";
     cdWrapperEl.style.transform = "";
   }

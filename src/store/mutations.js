@@ -14,8 +14,8 @@ const mutations = {
   setCurrentIndex(state, index) {
     state.currentIndex = index;
   },
-  setFullScreen(state, fullscreen) {
-    state.fullScreen = fullscreen;
+  setFullScreen(state, fullScreen) {
+    state.fullScreen = fullScreen;
   },
   setFavoriteList(state, list) {
     state.favoriteList = list;
@@ -27,6 +27,12 @@ const mutations = {
       }
       return item;
     });
+  },
+  setSearchHistory(state, searches) {
+    state.searchHistory = searches;
+  },
+  setPlayHistory(state, songs) {
+    state.playHistory = songs;
   },
 };
 

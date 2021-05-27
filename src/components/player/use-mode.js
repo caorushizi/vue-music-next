@@ -29,5 +29,9 @@ export default function useMode() {
     store.dispatch("changeMode", mode);
   }
 
-  return { modeIcon, modeText, changeMode };
+  return {
+    modeIcon,
+    modeText,
+    changeMode,
+  };
 }

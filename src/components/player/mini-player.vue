@@ -32,7 +32,7 @@
       <div class="control" @click.stop="showPlaylist">
         <i class="icon-playlist"></i>
       </div>
-      <playlist ref="playlistRef" />
+      <playlist ref="playlistRef"></playlist>
     </div>
   </transition>
 </template>
@@ -41,15 +41,15 @@
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import useCd from "./use-cd";
-import ProgressCircle from "./progress-circle";
 import useMiniSlider from "./use-mini-slider";
+import ProgressCircle from "./progress-circle";
 import Playlist from "./playlist";
 
 export default {
   name: "mini-player",
   components: {
-    ProgressCircle,
     Playlist,
+    ProgressCircle,
   },
   props: {
     progress: {
@@ -60,18 +60,19 @@ export default {
   },
   setup() {
     const playlistRef = ref(null);
+
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
     const currentSong = computed(() => store.getters.currentSong);
     const playing = computed(() => store.state.playing);
     const playlist = computed(() => store.state.playlist);
 
+    const { cdCls, cdRef, cdImageRef } = useCd();
+    const { sliderWrapperRef } = useMiniSlider();
+
     const miniPlayIcon = computed(() => {
       return playing.value ? "icon-pause-mini" : "icon-play-mini";
     });
-
-    const { cdRef, cdImageRef, cdCls } = useCd();
-    const { sliderWrapperRef } = useMiniSlider();
 
     function showNormalPlayer() {
       store.commit("setFullScreen", true);
@@ -82,18 +83,18 @@ export default {
     }
 
     return {
+      playlistRef,
       fullScreen,
       currentSong,
+      playlist,
       miniPlayIcon,
       showNormalPlayer,
       showPlaylist,
-      playlist,
-      playlistRef,
       // cd
+      cdCls,
       cdRef,
       cdImageRef,
-      cdCls,
-      // slider wrapper ref
+      // mini-slider
       sliderWrapperRef,
     };
   },

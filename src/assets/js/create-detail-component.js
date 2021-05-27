@@ -5,9 +5,7 @@ import { processSongs } from "@/service/song";
 export default function createDetailComponent(name, key, fetch) {
   return {
     name,
-    components: {
-      MusicList,
-    },
+    components: { MusicList },
     props: {
       data: Object,
     },
@@ -27,7 +25,7 @@ export default function createDetailComponent(name, key, fetch) {
           const cached = storage.session.get(key);
           if (
             cached &&
-            (cached.mid || String(cached.id)) === this.$route.params.id
+            (cached.mid || cached.id + "") === this.$route.params.id
           ) {
             ret = cached;
           }
@@ -47,7 +45,9 @@ export default function createDetailComponent(name, key, fetch) {
       const data = this.computedData;
       if (!data) {
         const path = this.$route.matched[0].path;
-        this.$router.push(path);
+        this.$router.push({
+          path,
+        });
         return;
       }
       const result = await fetch(data);

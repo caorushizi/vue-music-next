@@ -27,5 +27,9 @@ export default function useCd() {
         : innerTransform.concat(" ", wrapperTransform);
   }
 
-  return { cdCls, cdRef, cdImageRef };
+  return {
+    cdCls,
+    cdRef,
+    cdImageRef,
+  };
 }

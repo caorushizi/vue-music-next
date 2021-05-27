@@ -1,12 +1,12 @@
 import {
-  computed,
   h,
   mergeProps,
-  nextTick,
-  ref,
-  renderSlot,
-  watch,
   withCtx,
+  renderSlot,
+  ref,
+  computed,
+  watch,
+  nextTick,
 } from "vue";
 import Scroll from "@/components/base/scroll/scroll";
 import { useStore } from "vuex";
@@ -18,11 +18,17 @@ export default {
   render(ctx) {
     return h(
       Scroll,
-      mergeProps({ ref: "scrollRef" }, ctx.$props, {
-        onScroll: (e) => {
-          ctx.$emit("scroll", e);
+      mergeProps(
+        {
+          ref: "scrollRef",
         },
-      }),
+        ctx.$props,
+        {
+          onScroll: (e) => {
+            ctx.$emit("scroll", e);
+          },
+        }
+      ),
       {
         default: withCtx(() => {
           return [renderSlot(ctx.$slots, "default")];

@@ -7,7 +7,7 @@
     <div class="bg-image" :style="bgImageStyle" ref="bgImage">
       <div class="play-btn-wrapper" :style="playBtnStyle">
         <div v-show="songs.length > 0" class="play-btn" @click="random">
-          <i class="icon-play" />
+          <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
       </div>
@@ -15,14 +15,14 @@
     </div>
     <scroll
       class="list"
-      :probe-type="3"
       :style="scrollStyle"
       v-loading="loading"
       v-no-result:[noResultText]="noResult"
+      :probe-type="3"
       @scroll="onScroll"
     >
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem" :rank="rank" />
+        <song-list :songs="songs" @select="selectItem" :rank="rank"></song-list>
       </div>
     </scroll>
   </div>
@@ -73,7 +73,9 @@ export default {
       if (this.scrollY >= this.maxTranslateY) {
         display = "none";
       }
-      return { display };
+      return {
+        display,
+      };
     },
     bgImageStyle() {
       const scrollY = this.scrollY;
@@ -95,9 +97,9 @@ export default {
       }
 
       return {
+        zIndex,
         paddingTop,
         height,
-        zIndex,
         backgroundImage: `url(${this.pic})`,
         transform: `scale(${scale})translateZ(${translateZ}px)`,
       };

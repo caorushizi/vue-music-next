@@ -32,7 +32,6 @@
                   class="image"
                   :class="cdCls"
                   :src="currentSong.pic"
-                  alt=""
                 />
               </div>
             </div>
@@ -74,7 +73,7 @@
                 :progress="progress"
                 @progress-changing="onProgressChanging"
                 @progress-changed="onProgressChanged"
-              />
+              ></progress-bar>
             </div>
             <span class="time time-r">{{
               formatTime(currentSong.duration)
@@ -82,108 +81,123 @@
           </div>
           <div class="operators">
             <div class="icon i-left">
-              <i @click="changeMode" :class="modeIcon" />
+              <i @click="changeMode" :class="modeIcon"></i>
             </div>
             <div class="icon i-left" :class="disableCls">
-              <i @click="prev" class="icon-prev" />
+              <i @click="prev" class="icon-prev"></i>
             </div>
             <div class="icon i-center" :class="disableCls">
-              <i @click="togglePlay" :class="playIcon" />
+              <i @click="togglePlay" :class="playIcon"></i>
             </div>
             <div class="icon i-right" :class="disableCls">
-              <i @click="next" class="icon-next" />
+              <i @click="next" class="icon-next"></i>
             </div>
             <div class="icon i-right">
               <i
                 @click="toggleFavorite(currentSong)"
                 :class="getFavoriteIcon(currentSong)"
-              />
+              ></i>
             </div>
           </div>
         </div>
       </div>
     </transition>
-    <mini-player :progress="progress" :toggle-play="togglePlay" />
+    <mini-player :progress="progress" :toggle-play="togglePlay"></mini-player>
     <audio
       ref="audioRef"
-      @timeupdate="updateTime"
       @pause="pause"
       @canplay="ready"
       @error="error"
+      @timeupdate="updateTime"
       @ended="end"
-    />
+    ></audio>
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
-import { computed, nextTick, ref, watch } from "vue";
+import { computed, watch, ref, nextTick } from "vue";
 import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
 import useCd from "./use-cd";
 import useLyric from "./use-lyric";
 import useMiddleInteractive from "./use-middle-interactive";
+import useAnimation from "./use-animation";
+import usePlayHistory from "./use-play-history";
 import ProgressBar from "./progress-bar";
-import { formatTime } from "@/assets/js/util";
-import { PLAY_MODE } from "@/assets/js/constant";
 import Scroll from "@/components/base/scroll/scroll";
 import MiniPlayer from "./mini-player";
-import useAnimation from "./use-animation";
+import { formatTime } from "@/assets/js/util";
+import { PLAY_MODE } from "@/assets/js/constant";
 
 export default {
   name: "player",
-  components: { ProgressBar, Scroll, MiniPlayer },
+  components: {
+    MiniPlayer,
+    ProgressBar,
+    Scroll,
+  },
   setup() {
+    // data
     const audioRef = ref(null);
     const barRef = ref(null);
     const songReady = ref(false);
     const currentTime = ref(0);
     let progressChanging = false;
 
+    // vuex
     const store = useStore();
     const fullScreen = computed(() => store.state.fullScreen);
     const currentSong = computed(() => store.getters.currentSong);
     const playing = computed(() => store.state.playing);
     const currentIndex = computed(() => store.state.currentIndex);
-    const playlist = computed(() => store.state.playlist);
     const playMode = computed(() => store.state.playMode);
+
+    // hooks
     const { modeIcon, changeMode } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
     const { cdCls, cdRef, cdImageRef } = useCd();
     const {
       currentLyric,
       currentLineNum,
-      playLyric,
-      lyricListRef,
-      lyricScrollRef,
-      stopLyric,
       pureMusicLyric,
       playingLyric,
+      lyricScrollRef,
+      lyricListRef,
+      playLyric,
+      stopLyric,
     } = useLyric({
       songReady,
       currentTime,
     });
     const {
+      currentShow,
       middleLStyle,
       middleRStyle,
       onMiddleTouchStart,
       onMiddleTouchMove,
       onMiddleTouchEnd,
-      currentShow,
     } = useMiddleInteractive();
     const { cdWrapperRef, enter, afterEnter, leave, afterLeave } =
       useAnimation();
+    const { savePlay } = usePlayHistory();
+
+    // computed
+    const playlist = computed(() => store.state.playlist);
 
     const playIcon = computed(() => {
       return playing.value ? "icon-pause" : "icon-play";
     });
+
     const progress = computed(() => {
       return currentTime.value / currentSong.value.duration;
     });
+
     const disableCls = computed(() => {
       return songReady.value ? "" : "disable";
     });
 
+    // watch
     watch(currentSong, (newSong) => {
       if (!newSong.id || !newSong.url) {
         return;
@@ -217,6 +231,7 @@ export default {
       }
     });
 
+    // methods
     function goBack() {
       store.commit("setFullScreen", false);
     }
@@ -242,7 +257,7 @@ export default {
         loop();
       } else {
         let index = currentIndex.value - 1;
-        if (index === 1) {
+        if (index === -1) {
           index = list.length - 1;
         }
         store.commit("setCurrentIndex", index);
@@ -279,6 +294,7 @@ export default {
       }
       songReady.value = true;
       playLyric();
+      savePlay(currentSong.value);
     }
 
     function error() {
@@ -323,6 +339,7 @@ export default {
       fullScreen,
       currentTime,
       currentSong,
+      playlist,
       playIcon,
       disableCls,
       progress,
@@ -333,16 +350,15 @@ export default {
       next,
       ready,
       error,
-      end,
       updateTime,
       formatTime,
       onProgressChanging,
       onProgressChanged,
-      playlist,
+      end,
       // mode
       modeIcon,
       changeMode,
-      //favorite
+      // favorite
       getFavoriteIcon,
       toggleFavorite,
       // cd
@@ -352,17 +368,17 @@ export default {
       // lyric
       currentLyric,
       currentLineNum,
-      lyricListRef,
-      lyricScrollRef,
       pureMusicLyric,
       playingLyric,
-      // middle interactive
+      lyricScrollRef,
+      lyricListRef,
+      // middle-interactive
+      currentShow,
       middleLStyle,
       middleRStyle,
       onMiddleTouchStart,
       onMiddleTouchMove,
       onMiddleTouchEnd,
-      currentShow,
       // animation
       cdWrapperRef,
       enter,

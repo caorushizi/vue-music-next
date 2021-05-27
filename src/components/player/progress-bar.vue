@@ -1,15 +1,15 @@
 <template>
   <div class="progress-bar" @click="onClick">
     <div class="bar-inner">
-      <div class="progress" ref="progress" :style="progressStyle" />
-      <div class="progress-btn-wrapper">
-        <div
-          class="progress-btn"
-          :style="btnStyle"
-          @touchstart.prevent="onTouchStart"
-          @touchmove.prevent="onTouchMove"
-          @touchend.prevent="onTouchEnd"
-        />
+      <div class="progress" ref="progress" :style="progressStyle"></div>
+      <div
+        class="progress-btn-wrapper"
+        :style="btnStyle"
+        @touchstart.prevent="onTouchStart"
+        @touchmove.prevent="onTouchMove"
+        @touchend.prevent="onTouchEnd"
+      >
+        <div class="progress-btn"></div>
       </div>
     </div>
   </div>

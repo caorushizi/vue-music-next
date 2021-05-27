@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import Scroll from "@/components/wrap-scroll";
+import Scroll from "@/components/wrap-scroll/index";
 import useFixed from "./use-fixed";
 import useShortcut from "./use-shortcut";
 
@@ -62,8 +62,8 @@ export default {
       useFixed(props);
     const {
       shortcutList,
-      onShortcutTouchStart,
       scrollRef,
+      onShortcutTouchStart,
       onShortcutTouchMove,
     } = useShortcut(props, groupRef);
 
@@ -72,16 +72,18 @@ export default {
     }
 
     return {
+      onItemClick,
+      // fixed
       groupRef,
       onScroll,
       fixedTitle,
       fixedStyle,
-      shortcutList,
       currentIndex,
-      onShortcutTouchStart,
+      // shortcut
+      shortcutList,
       scrollRef,
+      onShortcutTouchStart,
       onShortcutTouchMove,
-      onItemClick,
     };
   },
 };

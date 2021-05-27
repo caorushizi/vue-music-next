@@ -1,5 +1,5 @@
 <template>
-  <div class="singer">
+  <div class="singer" v-loading="!singers.length">
     <index-list :data="singers" @select="selectSinger" />
     <router-view v-slot="{ Component }">
       <transition appear name="slide">

@@ -1,4 +1,13 @@
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  onActivated,
+  onDeactivated,
+} from "vue";
 import { useStore } from "vuex";
 import BScroll from "@better-scroll/core";
 import Slide from "@better-scroll/slide";
@@ -21,8 +30,8 @@ export default function useMiniSlider() {
   onMounted(() => {
     let sliderVal;
     watch(sliderShow, async (newSliderShow) => {
-      await nextTick();
       if (newSliderShow) {
+        await nextTick();
         if (!sliderVal) {
           sliderVal = slider.value = new BScroll(sliderWrapperRef.value, {
             click: true,
@@ -65,6 +74,15 @@ export default function useMiniSlider() {
     if (slider.value) {
       slider.value.destroy();
     }
+  });
+
+  onActivated(() => {
+    slider.value.enable();
+    slider.value.refresh();
+  });
+
+  onDeactivated(() => {
+    slider.value.disable();
   });
 
   return {

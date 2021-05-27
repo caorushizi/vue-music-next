@@ -1,4 +1,4 @@
-import { get } from "@/service/base";
+import { get } from "./base";
 
 export function getTopList() {
   return get("/api/getTopList");

@@ -50,8 +50,8 @@
           @confirm="confirmClear"
           text="是否清空播放列表？"
           confirm-btn-text="清空"
-        />
-        <add-song ref="addSongRef" />
+        ></confirm>
+        <add-song ref="addSongRef"></add-song>
       </div>
     </transition>
   </teleport>
@@ -59,28 +59,34 @@
 
 <script>
 import Scroll from "@/components/base/scroll/scroll";
-import { computed, nextTick, ref, watch } from "vue";
+import Confirm from "@/components/base/confirm/confirm";
+import AddSong from "@/components/add-song/add-song";
+import { ref, computed, nextTick, watch } from "vue";
 import { useStore } from "vuex";
 import useMode from "./use-mode";
 import useFavorite from "./use-favorite";
-import Confirm from "@/components/base/confirm/confirm";
 
 export default {
   name: "playlist",
-  components: { Scroll, Confirm },
+  components: {
+    AddSong,
+    Confirm,
+    Scroll,
+  },
   setup() {
-    const scrollRef = ref(null);
-    const confirmRef = ref(null);
-    const listRef = ref(null);
     const visible = ref(false);
     const removing = ref(false);
+    const scrollRef = ref(null);
+    const listRef = ref(null);
+    const confirmRef = ref(null);
+    const addSongRef = ref(null);
 
     const store = useStore();
     const playlist = computed(() => store.state.playlist);
     const sequenceList = computed(() => store.state.sequenceList);
     const currentSong = computed(() => store.getters.currentSong);
 
-    const { modeIcon, changeMode, modeText } = useMode();
+    const { modeIcon, modeText, changeMode } = useMode();
     const { getFavoriteIcon, toggleFavorite } = useFavorite();
 
     watch(currentSong, async (newSong) => {
@@ -99,6 +105,7 @@ export default {
 
     async function show() {
       visible.value = true;
+
       await nextTick();
       refreshScroll();
       scrollToCurrent();
@@ -106,6 +113,15 @@ export default {
 
     function hide() {
       visible.value = false;
+    }
+
+    function selectItem(song) {
+      const index = playlist.value.findIndex((item) => {
+        return song.id === item.id;
+      });
+
+      store.commit("setCurrentIndex", index);
+      store.commit("setPlayingState", true);
     }
 
     function refreshScroll() {
@@ -122,15 +138,6 @@ export default {
       const target = listRef.value.$el.children[index];
 
       scrollRef.value.scroll.scrollToElement(target, 300);
-    }
-
-    function selectItem(song) {
-      const index = playlist.value.findIndex((item) => {
-        return song.id === item.id;
-      });
-
-      store.commit("setCurrentIndex", index);
-      store.commit("setPlayingState", true);
     }
 
     function removeSong(song) {
@@ -156,25 +163,31 @@ export default {
       hide();
     }
 
+    function showAddSong() {
+      addSongRef.value.show();
+    }
+
     return {
       visible,
-      playlist,
-      sequenceList,
+      removing,
       scrollRef,
       listRef,
-      removing,
       confirmRef,
-      hide,
-      show,
+      addSongRef,
+      playlist,
+      sequenceList,
       getCurrentIcon,
+      show,
+      hide,
       selectItem,
       removeSong,
       showConfirm,
       confirmClear,
+      showAddSong,
       // mode
       modeIcon,
-      changeMode,
       modeText,
+      changeMode,
       // favorite
       getFavoriteIcon,
       toggleFavorite,

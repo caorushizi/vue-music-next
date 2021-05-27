@@ -12,11 +12,11 @@ export default function createLoadingLikeDirective(Comp) {
       if (!el[name]) {
         el[name] = {};
       }
+      el[name].instance = instance;
       const title = binding.arg;
       if (typeof title !== "undefined") {
         instance.setTitle(title);
       }
-      el[name].instance = instance;
 
       if (binding.value) {
         append(el);

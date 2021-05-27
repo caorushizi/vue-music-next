@@ -1,4 +1,4 @@
-import { computed, ref } from "vue";
+import { ref, computed } from "vue";
 
 export default function useShortcut(props, groupRef) {
   const ANCHOR_HEIGHT = 18;
@@ -38,5 +38,10 @@ export default function useShortcut(props, groupRef) {
     scroll.scrollToElement(targetEl, 0);
   }
 
-  return { shortcutList, scrollRef, onShortcutTouchStart, onShortcutTouchMove };
+  return {
+    shortcutList,
+    scrollRef,
+    onShortcutTouchStart,
+    onShortcutTouchMove,
+  };
 }

@@ -8,9 +8,9 @@ const debug = process.env.NODE_ENV !== "production";
 
 export default createStore({
   state,
+  getters,
   mutations,
   actions,
-  getters,
   strict: debug,
-  plugins: debug ? [createLogger] : [],
+  plugins: debug ? [createLogger()] : [],
 });

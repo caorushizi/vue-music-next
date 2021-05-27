@@ -1,6 +1,6 @@
 import { useStore } from "vuex";
 import { computed } from "vue";
-import { remove, save } from "@/assets/js/array-store";
+import { save, remove } from "@/assets/js/array-store";
 import { FAVORITE_KEY } from "@/assets/js/constant";
 
 export default function useFavorite() {
@@ -19,7 +19,6 @@ export default function useFavorite() {
     } else {
       list = save(song, FAVORITE_KEY, compare, maxLen);
     }
-
     store.commit("setFavoriteList", list);
 
     function compare(item) {
@@ -35,5 +34,8 @@ export default function useFavorite() {
     );
   }
 
-  return { getFavoriteIcon, toggleFavorite };
+  return {
+    getFavoriteIcon,
+    toggleFavorite,
+  };
 }

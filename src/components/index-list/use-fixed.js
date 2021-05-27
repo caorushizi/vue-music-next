@@ -1,4 +1,4 @@
-import { ref, watch, nextTick, computed } from "vue";
+import { ref, watch, computed, nextTick } from "vue";
 
 export default function useFixed(props) {
   const TITLE_HEIGHT = 30;
@@ -23,7 +23,7 @@ export default function useFixed(props) {
         ? distanceVal - TITLE_HEIGHT
         : 0;
     return {
-      transform: `translate3d(0, ${diff}px, 0)`,
+      transform: `translate3d(0,${diff}px,0)`,
     };
   });
 

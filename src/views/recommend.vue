@@ -70,7 +70,9 @@ export default {
     selectItem(album) {
       this.selectedAlbum = album;
       this.cacheAlbum(album);
-      this.$router.push(`/recommend/${album.id}`);
+      this.$router.push({
+        path: `/recommend/${album.id}`,
+      });
     },
     cacheAlbum(album) {
       storage.session.set(ALBUM_KEY, album);

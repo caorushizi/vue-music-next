@@ -1,5 +1,5 @@
 import { useStore } from "vuex";
-import { computed, ref, watch } from "vue";
+import { computed, watch, ref } from "vue";
 import { getLyric } from "@/service/song";
 import Lyric from "lyric-parser";
 
@@ -20,7 +20,7 @@ export default function useLyric({ songReady, currentTime }) {
     }
     stopLyric();
     currentLyric.value = null;
-    currentLineNum.value = null;
+    currentLineNum.value = 0;
     pureMusicLyric.value = "";
     playingLyric.value = "";
 
@@ -41,7 +41,7 @@ export default function useLyric({ songReady, currentTime }) {
       }
     } else {
       playingLyric.value = pureMusicLyric.value = lyric.replace(
-        /\[(\d{2}):(\d{2}):(\d{2})]/g,
+        /\[(\d{2}):(\d{2}):(\d{2})\]/g,
         ""
       );
     }
@@ -80,10 +80,10 @@ export default function useLyric({ songReady, currentTime }) {
   return {
     currentLyric,
     currentLineNum,
+    pureMusicLyric,
     playingLyric,
     lyricScrollRef,
     lyricListRef,
-    pureMusicLyric,
     playLyric,
     stopLyric,
   };

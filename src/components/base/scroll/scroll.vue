@@ -25,9 +25,10 @@ export default {
     const rootRef = ref(null);
     const scroll = useScroll(rootRef, props, emit);
 
-    return { rootRef, scroll };
+    return {
+      rootRef,
+      scroll,
+    };
   },
 };
 </script>
-
-<style scoped></style>
